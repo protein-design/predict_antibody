@@ -3,18 +3,33 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import py3Dmol
-
 
 class PlotPdb:
     
+    @staticmethod
+    def bar_release(df, args):
+        df['year'] = df['release_date'].dt.year
+        pdf = df[['pdb_id','year']].drop_duplicates()
+        counts = pdf.groupby('year').agg({'pdb_id':len})
+        counts = counts.reset_index()
+        col1, col2 = 'Year', 'Structures'
+        counts.columns = [col1, col2]
+        counts[col1] = counts[col1].astype(int)
+
+        fig, ax = plt.subplots(1, figsize=args.get('figsize', (10,3)), layout='tight')
+        fig.suptitle(f"Released PDB Structures by Years")
+        x_order = counts.sort_values(col1, ascending=False)[col1]
+        sns.barplot(counts, x=col1, y=col2, color='grey', order=x_order, ax=ax)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=args.get('rotation', 45), ha='right')
+        return fig
+
     @staticmethod
     def bar_count_pdb(df, ymax=None):
         counts = df['structure_method'].value_counts()
         num_pdb = len(df['pdb_id'].unique())
 
         fig, ax = plt.subplots(1, figsize=(6,3), layout='tight')
-        bars = ax.bar(counts.index, counts)
+        bars = ax.bar(counts.index, counts, color='grey')
         ax.set_title(f'{num_pdb} PDB')
         ax.set_ylabel('Number of PDB')
         if ymax:
@@ -75,7 +90,7 @@ class PlotPdb:
         return fig, ax
 
     @staticmethod
-    def pie_complex(df):
+    def pie_complex(df, args):
         num_pdb = len(df['pdb_id'].unique())
         g = df.groupby('pdb_id').agg({'chain_no':'nunique'})
         g = g.value_counts()
@@ -86,12 +101,18 @@ class PlotPdb:
         counts = counts.reset_index()
         print(counts)
 
-        fig, ax = plt.subplots(1, figsize=(6,4), layout='tight')
+        fig, ax = plt.subplots(1, figsize=args.get('figsize', (7,4)), layout='tight')
         # light color
         colors = plt.cm.Pastel1(np.arange(len(counts)))
         explode = [0, 0, 0, 0.1, 0.2, 0.3, 0.1]
-        ax.pie(counts['count'], labels=counts['index'], autopct='%.1f%%', 
-            colors=colors, explode=explode, startangle=90)
+        ax.pie(
+            counts['count'],
+            labels=counts['index'],
+            autopct='%.1f%%', 
+            colors=colors,
+            explode=explode,
+            startangle=args.get('startangle', 90)
+        )
         ax.set_title(f'Protein Complex in {num_pdb} PDB data')
         return fig, ax
 
