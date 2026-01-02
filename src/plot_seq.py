@@ -5,7 +5,7 @@ import seaborn as sns
 class PlotSeq:
 
     @staticmethod
-    def pie_species(df, n:int, explode:list, args):
+    def pie_species(df:pd.DataFrame, n:int, explode:list, args):
         # counts
         cdf = df[df['specie'].notna()]
         values = cdf['specie'].value_counts()
@@ -41,7 +41,7 @@ class PlotSeq:
         plt.show()
 
     @staticmethod
-    def plot_summary(df):
+    def plot_summary(df:pd.DataFrame):
         # combine data
         # data = self.df_combined()
 
@@ -62,7 +62,7 @@ class PlotSeq:
         return df, counts
     
     @staticmethod    
-    def plot_summary_specie(df, specie):
+    def plot_summary_specie(df:pd.DataFrame, specie):
         sdf = df[df['specie']==specie]
         print(sdf.shape)
         g = sdf.groupby('chain_type').agg({'gene_name':'nunique', 'allele_name':'nunique', 'chain_seq': 'nunique'})
@@ -85,10 +85,9 @@ class PlotSeq:
         ax[1][1].set_title('Length of Sequences')
         ax[1][1].set_ylabel('Length of AA')
 
-
-    
+   
     @staticmethod
-    def pie_gene(df, specie, chain_type:str, key:str, n:int, args):
+    def pie_gene(df:pd.DataFrame, specie, chain_type:str, key:str, n:int, args):
         cdf = df[(df['specie']==specie)&(df['chain_type']==chain_type)]
         values = cdf[key].value_counts()
         values = values.reset_index()

@@ -7,7 +7,7 @@ import matplotlib.patches as patches
 class PlotPdb:
     
     @staticmethod
-    def bar_release(df, args):
+    def bar_release(df:pd.DataFrame, args:dict):
         df['year'] = df['release_date'].dt.year
         pdf = df[['pdb_id','year']].drop_duplicates()
         counts = pdf.groupby('year').agg({'pdb_id':len})
@@ -24,7 +24,7 @@ class PlotPdb:
         return fig
 
     @staticmethod
-    def bar_count_pdb(df, ymax=None):
+    def bar_count_pdb(df:pd.DataFrame, ymax=None):
         counts = df['structure_method'].value_counts()
         num_pdb = len(df['pdb_id'].unique())
 
@@ -41,7 +41,7 @@ class PlotPdb:
         return fig, ax
 
     @staticmethod
-    def violin_resolution(df):
+    def violin_resolution(df:pd.DataFrame):
         fig, ax = plt.subplots(1, figsize=(6,4), layout='tight')
     
         rdf = df[df['resolution'].notna()]
@@ -63,7 +63,7 @@ class PlotPdb:
         return fig, ax
 
     @staticmethod
-    def hist_resolution(df, height=200):
+    def hist_resolution(df:pd.DataFrame, height=200):
         '''
         select best resolution
         '''
@@ -90,7 +90,7 @@ class PlotPdb:
         return fig, ax
 
     @staticmethod
-    def pie_complex(df, args):
+    def pie_complex(df:pd.DataFrame, args):
         num_pdb = len(df['pdb_id'].unique())
         g = df.groupby('pdb_id').agg({'chain_no':'nunique'})
         g = g.value_counts()
@@ -117,7 +117,7 @@ class PlotPdb:
         return fig, ax
 
     @staticmethod
-    def dot_bfactor(df, title_label:str=None, quantile=.9, xlim_max:int=None):
+    def dot_bfactor(df:pd.DataFrame, title_label:str=None, quantile=.9, xlim_max:int=None):
         fig, ax = plt.subplots(1, figsize=(8,4), layout='tight')
 
         sns.scatterplot(df, y='resolution', x='avg_bfactor', alpha=.1, s=10, ax=ax)
