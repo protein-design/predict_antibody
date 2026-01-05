@@ -1,3 +1,6 @@
+'''
+figure 6.5x8 inch (16.5x20 cm)
+'''
 import numpy as np
 import pandas as pd
 import seaborn as sns
