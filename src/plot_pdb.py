@@ -20,6 +20,7 @@ class PlotPdb:
 
         x_order = counts.sort_values(col1, ascending=False)[col1]
         sns.barplot(counts, x=col1, y=col2, color='grey', order=x_order, ax=ax)
+        ax.set_ylim(0, 1000)
         xtick_labels = ax.get_xticklabels()
         ax.set_xticks(range(len(xtick_labels)))
         ax.set_xticklabels(xtick_labels, rotation=80, ha='center')

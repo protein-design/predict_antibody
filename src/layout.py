@@ -90,6 +90,62 @@ class Layout:
                 ha='left', va='top', fontsize=10, fontweight='bold')
         return fig, tuple(axes)
 
+    def grid_23(self, panel_xytext:list):
+        '''
+        2 x 3 figures
+        '''
+        fig = plt.figure(figsize=self.figsize, constrained_layout=True)
+        gs = gridspec.GridSpec(ncols=3, nrows=2, figure=fig)
+        # spaces between panels
+        gs.update(
+            wspace=self.args.get('wspace', .1),
+            hspace=self.args.get('hspace', .2)
+        )
+        # add panels
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax3 = fig.add_subplot(gs[0, 2])
+        ax4 = fig.add_subplot(gs[1, 0])
+        ax5 = fig.add_subplot(gs[1, 1])
+        ax6 = fig.add_subplot(gs[1, 2])
+        axes = [ax1, ax2, ax3, ax4, ax5, ax6]
+
+        # add panel labels
+        for i in range(6):
+            ax = axes[i]
+            ax.annotate(self.panel_label[i], (0,1), xytext=panel_xytext[i],
+                xycoords='axes fraction', textcoords='offset points',
+                ha='left', va='top', fontsize=10, fontweight='bold')
+        return fig, tuple(axes)
+
+    def grid_32(self, panel_xytext:list):
+        '''
+        2 x 2 figures
+        '''
+        fig = plt.figure(figsize=self.figsize, constrained_layout=True)
+        gs = gridspec.GridSpec(ncols=2, nrows=3, figure=fig)
+        # spaces between panels
+        gs.update(
+            wspace=self.args.get('wspace', .1),
+            hspace=self.args.get('hspace', .1)
+        )
+        # add panels
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax3 = fig.add_subplot(gs[1, 0])
+        ax4 = fig.add_subplot(gs[1, 1])
+        ax5 = fig.add_subplot(gs[2, 0])
+        ax6 = fig.add_subplot(gs[2, 1])
+        axes = [ax1, ax2, ax3, ax4, ax5, ax6]
+
+        # add panel labels
+        for i in range(6):
+            ax = axes[i]
+            ax.annotate(self.panel_label[i], (0,1), xytext=panel_xytext[i],
+                xycoords='axes fraction', textcoords='offset points',
+                ha='left', va='top', fontsize=10, fontweight='bold')
+        return fig, tuple(axes)
+    
     def row1_row2(self, panel_xytext:list):
         '''
         1st row: one figure, 2nd row: two figures
@@ -99,11 +155,45 @@ class Layout:
         wrt=self.args.get('width_ratios', [1, 1])
         gs = gridspec.GridSpec(nrows=2, ncols=2, height_ratios=hrt, width_ratios=wrt)
         # spaces between panels
-        gs.update(wspace=self.args.get('wspace', 0.4), hspace=self.args.get('hspace', 0.4))
+        gs.update(
+            wspace=self.args.get('wspace', 0.4),
+            hspace=self.args.get('hspace', 0.4)
+        )
 
         # Create axes objects that span specific grid locations
         ax1 = fig.add_subplot(gs[0, :])
         ax2 = fig.add_subplot(gs[1, 0])
+        ax3 = fig.add_subplot(gs[1, 1])
+        axes = [ax1, ax2, ax3]
+
+        # add panel labels
+        for i in range(3):
+            ax = axes[i]
+            ax.annotate(self.panel_label[i], (0,1), xytext=panel_xytext[i],
+                xycoords='axes fraction', textcoords='offset points',
+                ha='left', va='top', fontsize=10, fontweight='bold')
+        return fig, tuple(axes)
+
+    def col1_col2(self, panel_xytext:list):
+        '''
+        1st col: one figure, 2nd col: two figures in two rows
+        '''
+        fig = plt.figure(figsize=self.figsize)
+        gs = gridspec.GridSpec(
+            nrows=2,
+            ncols=2,
+            height_ratios=self.args.get('height_ratios', [1, 1]),
+            width_ratios=self.args.get('width_ratios', [1, 1])
+        )
+        # spaces between panels
+        gs.update(
+            wspace=self.args.get('wspace', 0.4),
+            hspace=self.args.get('hspace', 0.4)
+        )
+
+        # Create axes objects that span specific grid locations
+        ax1 = fig.add_subplot(gs[:, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
         ax3 = fig.add_subplot(gs[1, 1])
         axes = [ax1, ax2, ax3]
 

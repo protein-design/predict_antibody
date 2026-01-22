@@ -54,7 +54,7 @@ class PlotSeq:
 
         # other counts
         counts = pd.DataFrame()
-        if n:
+        if topn:
             counts = pd.DataFrame(values.iloc[:topn,:])
             # other counts
             other = sum(values['count'][topn:])
@@ -240,8 +240,10 @@ class PlotSeq:
         values = values.reset_index()
         counts = pd.DataFrame(values.iloc[:topn,:])
         counts['percent'] = counts['count'] * 100 /sum(counts['count'])
+        if self.verbose:
+            print(counts)
 
-        width = params.get('bar_width', None)
+        width = params.get('bar_width', .5)
         sns.barplot(counts, x='percent', y=key, color='grey', width=width, ax=ax)
         ax.set_title(chain_type + ' chain')
         ax.set_xlabel('Percentage, %', fontsize=8)
