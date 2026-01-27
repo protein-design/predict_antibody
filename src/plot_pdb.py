@@ -150,3 +150,46 @@ class PlotPdb:
         plt.gca().invert_yaxis()
         return ax
 
+
+    def violin_equal_rmsd(self, ax):
+        sns.violinplot(self.df, y='chain_type', x='rmsd', ax=ax,
+            fill=False, color='black')
+        ax.set_xlabel('RMSD')
+        ax.set_ylabel(None)
+        ax.set_yticks([0,1,2], labels=['Heavy','Kappa','Lambda'])
+        return ax
+    
+    def pie_equal_seq(self, ax, n:int=5):
+        equal_counts = self.df.groupby('first_chain_id').agg( num_equal= ('chain_id', len))
+        equal_counts = equal_counts['num_equal'].value_counts()
+        equal_counts = equal_counts.sort_index()
+        counts = equal_counts[:n]
+        counts[f'> {n}'] = sum(equal_counts[n:])
+        print(counts)
+
+        colors = ['lightgrey'] * len(counts)
+        explode = [0.02,] * len(counts)
+        ax.pie(
+            counts,
+            labels=counts.index,
+            textprops={'fontsize': 8},
+            labeldistance=1.1,
+            autopct='%.1f%%', 
+            pctdistance=.7,
+            colors=colors,
+            explode=explode,
+            startangle=0,
+        )
+        return ax
+
+    def hist_rmsd(self, ax, chain_type):
+        sub = self.df[self.df['chain_type']==chain_type].dropna()
+        sns.histplot(sub, x='rmsd', ax=ax, bins=100, stat='percent', color='lightgrey')
+        ax.set_xlim(-1,20)
+        ax.set_ylim(0,30)
+        ax.set_xlabel('RMSD')
+        ax.set_ylabel('Percentage, %')
+        q = np.quantile(sub['rmsd'], .95)
+        ax.axvline(q, color='grey', linestyle='--')
+        ax.text(q+1, 25, round(q, 2))
+        return ax

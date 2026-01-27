@@ -104,3 +104,69 @@ class LoadData:
                 res.append(aln)
         print(region_name, len(res))
         return pd.DataFrame(res).fillna(0)
+    
+    @staticmethod
+    def plddt():
+        adf = LoadData.antibody()
+        query = "select * from chain_plddt p;"
+        pdf = QueryComplex(True).list_data(query, True)
+        df = pd.merge(pdf, adf, how='left', on='chain_id')
+        return df
+
+    @staticmethod
+    def plddt_rmsd():
+        adf = LoadData.antibody()
+        query = """
+            select r.chain_id, r.rmsd, p.avg_plddt
+            from chain_rmsd       r
+            left join chain_plddt p
+            on r.chain_id=p.chain_id and r.model_pdb = p.relative_pdb
+            where r.chain_status = 'Raw'
+                and r.rmsd is not null
+                and p.ranking=1
+        ;"""
+        pdf = QueryComplex(True).list_data(query, True)
+        df = pd.merge(pdf, adf, how='left', on='chain_id')
+        return df
+
+    @staticmethod
+    def plddt_tm():
+        adf = LoadData.antibody()
+        query = """
+            select r.chain_id, r.tm1, r.rmsd, p.avg_plddt
+            from chain_tmalign r
+            left join chain_plddt p
+            on r.chain_id=p.chain_id and r.model_pdb = p.relative_pdb
+            where r.chain_status = 'Raw'
+                and r.tm1 is not null
+                and p.ranking=1
+        ;"""
+        pdf = QueryComplex(True).list_data(query, True)
+        df = pd.merge(pdf, adf, how='left', on='chain_id')
+        return df
+    
+    @staticmethod
+    def equal_seq():
+        query = """
+            select * from pdb_chain_seq
+            where chain_id in (
+                select chain_id from view_antibody
+            )
+        """
+        df = QueryComplex(True).list_data(query, True)
+        g = df.groupby('first_chain_id')
+        return g
+        
+    @staticmethod
+    def equal_seq_rmsd():
+        adf = LoadData.antibody()
+        query = """
+            select * from equal_seq_rmsd
+            where chain_id in (
+                select chain_id from view_antibody
+            )
+        """
+        df = QueryComplex(True).list_data(query, True)
+        df = pd.merge(df, adf, how='left', on='chain_id')
+        df = df.dropna()
+        return df
