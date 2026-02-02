@@ -130,6 +130,34 @@ class Layout:
                 ha='left', va='top', fontsize=10, fontweight='bold')
         return fig, tuple(axes)
 
+    def row2_row3(self, panel_xytext:list):
+        '''
+        1st row: 2 figures, 2nd row: 3 figures
+        '''
+        fig = plt.figure(figsize=self.figsize)
+        gs = gridspec.GridSpec(nrows=2, ncols=6, 
+            height_ratios=self.args.get('height_ratios', [1,1,]),
+            width_ratios=self.args.get('width_ratios', [1,]*6),
+            # spaces between panels
+            wspace=self.args.get('wspace', .2),
+            hspace=self.args.get('hspace', .2),
+        )
+        # Create axes objects that span specific grid locations
+        ax1 = fig.add_subplot(gs[0, :3])
+        ax2 = fig.add_subplot(gs[0, 3:])
+        ax3 = fig.add_subplot(gs[1, 0:2])
+        ax4 = fig.add_subplot(gs[1, 2:4])
+        ax5 = fig.add_subplot(gs[1, 4:6])
+        axes = [ax1, ax2, ax3, ax4, ax5]
+
+        # add panel labels
+        for i in range(5):
+            ax = axes[i]
+            ax.annotate(self.panel_label[i], (0,1), xytext=panel_xytext[i],
+                xycoords='axes fraction', textcoords='offset points',
+                ha='left', va='top', fontsize=10, fontweight='bold')
+        return fig, tuple(axes)
+    
     def col1_col2(self, panel_xytext:list):
         '''
         1st col: one figure, 2nd col: two figures in two rows

@@ -15,10 +15,19 @@ class LoadData:
 
     @staticmethod
     def antibody():
+        def func(x):
+            if x == 'H':
+                return 'Heavy'
+            elif x == 'K':
+                return 'Kappa'
+            elif x == 'L':
+                return 'Lambda'
+            return x
         query = "select * from view_antibody;"
         df = QueryComplex(True).list_data(query, True)
-        print('pdb', len(df['pdb_id'].unique()))
-        print('chains', len(df['chain_id'].unique()))
+        df['chain_type'] = df['chain_type'].map(func)
+        print('antibody, pdb: ', len(df['pdb_id'].unique()))
+        print('antibody, chains:', len(df['chain_id'].unique()))
         return df
     
     @staticmethod
@@ -106,14 +115,6 @@ class LoadData:
         return pd.DataFrame(res).fillna(0)
     
     @staticmethod
-    def plddt():
-        adf = LoadData.antibody()
-        query = "select * from chain_plddt p;"
-        pdf = QueryComplex(True).list_data(query, True)
-        df = pd.merge(pdf, adf, how='left', on='chain_id')
-        return df
-
-    @staticmethod
     def plddt_rmsd():
         adf = LoadData.antibody()
         query = """
@@ -127,6 +128,7 @@ class LoadData:
         ;"""
         pdf = QueryComplex(True).list_data(query, True)
         df = pd.merge(pdf, adf, how='left', on='chain_id')
+        df = df.dropna()
         return df
 
     @staticmethod
@@ -143,6 +145,23 @@ class LoadData:
         ;"""
         pdf = QueryComplex(True).list_data(query, True)
         df = pd.merge(pdf, adf, how='left', on='chain_id')
+        return df
+    
+    @staticmethod
+    def rmsd_confidence(chain_status):
+        adf = LoadData.antibody()
+        query = f"""
+            select a.chain_id, a.avg_plddt, a.avg_ptm, 
+                a.max_pae, r.rmsd, t.tm1
+            from chain_afsum a
+            left join chain_rmsd r on a.chain_id=r.chain_id
+            left join chain_tmalign t on a.chain_id=t.chain_id
+            where a.ranking=1
+                and r.chain_status='{chain_status}'
+        ;"""
+        pdf = QueryComplex(True).list_data(query, True)
+        df = pd.merge(pdf, adf, how='left', on='chain_id')
+        df = df.dropna()
         return df
     
     @staticmethod
@@ -169,4 +188,16 @@ class LoadData:
         df = QueryComplex(True).list_data(query, True)
         df = pd.merge(df, adf, how='left', on='chain_id')
         df = df.dropna()
+        return df
+    
+    @staticmethod
+    def chain_afsum():
+        adf = LoadData.antibody()
+        query = "select * from chain_afsum;"
+        pdf = QueryComplex(True).list_data(query, True)
+        df = pd.merge(pdf, adf, how='left', on='chain_id')
+        df = df[df['ranking']==1]
+        df = df.dropna()
+        print(df.shape)
+        print(df.iloc[0].to_dict())
         return df
