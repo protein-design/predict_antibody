@@ -34,10 +34,9 @@ class PlotPredict:
         col1 = params.get('col1')
         col2 = params.get('col2')
         chain_type = params.get('chain_type')
-        df = self.df[self.df['chain_type']==chain_type] \
-            if chain_type else self.df
-        sns.scatterplot(df, x=col1, y=col2,
-            ax=ax, color='black', alpha=.2, s=10)
+        df = self.df[self.df['chain_type']==chain_type] if chain_type else self.df
+        sns.scatterplot(df, x=col1, y=col2, ax=ax,
+            color='black', alpha=.2, s=10)
         if 'xlabel' in params:
             ax.set_xlabel(params['xlabel'])
         if 'ylabel' in params:
@@ -125,8 +124,7 @@ class PlotPredict:
         return ax
 
     def dot_plddt_rmsd(self, ax, chain_type=None, q=.95):
-        sdf = self.df[self.df['chain_type']==chain_type] \
-            if chain_type else self.df
+        sdf = self.df[self.df['chain_type']==chain_type] if chain_type else self.df
         
         col1 = 'avg_plddt'
         col2 = 'rmsd'

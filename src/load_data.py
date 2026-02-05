@@ -9,7 +9,7 @@ for _dir in (src_dir, bioomics_dir):
     if _dir not in sys.path:
         sys.path.append(_dir)
 
-from bioomics import QueryComplex
+from bioomics import QueryComplex, ProcessPickle
 
 class LoadData:
 
@@ -201,3 +201,27 @@ class LoadData:
         print(df.shape)
         print(df.iloc[0].to_dict())
         return df
+    
+    @staticmethod
+    def abag_dist_stat(pfile):
+        res = []
+        data = ProcessPickle(pfile).load_pickle([])
+        for row in data:
+            dist = row['dist']['value'].sort_values()
+            rec = {
+                'pdb_id': row['pdb_id'],
+                'combo_id': row['combo_id'],
+                'chain_combo': row['chain_combo'],
+                'ab_chain_no': row['ab_chain_no'],
+                '1th': dist[0],
+                '2th': dist[1] if 1 < len(dist) else None,
+                '3th': dist[2] if 2 < len(dist) else None,
+                '4th': dist[3] if 3 < len(dist) else None,
+                '5th': dist[4] if 4 < len(dist) else None,
+                '10th': dist[9] if 9 < len(dist) else None,
+                'mean5th': np.mean(dist[:5]) if 4 < len(dist) else None,
+                'mean10th': np.mean(dist[:10]) if 9 < len(dist) else None,
+            }
+            res.append(rec)
+        print('number of abag dimer:', len(res))
+        return pd.DataFrame(res)
