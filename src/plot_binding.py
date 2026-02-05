@@ -33,7 +33,7 @@ class PlotBinding:
         droc = self.data[col]
         fpr, tpr, thresholds = roc_curve(droc['y'], -droc[col])
         roc_auc = auc(fpr, tpr)
-        ax.plot(fpr, tpr, color='grey')
+        ax.plot(fpr, tpr, color='black')
         ax.set_xlabel('False positive rate')
         ax.set_ylabel('True positive rate')
         ax.set_title(f"AUC = {roc_auc:.2f}", fontsize=8)
