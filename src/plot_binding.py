@@ -12,6 +12,32 @@ class PlotBinding:
         self.data = data
         self.verbose = verbose
 
+    def hist_contacts(self, ax, cutoff):
+        df = self.data[cutoff]
+        sns.histplot(df, x='num_ca', stat='percent', ax=ax, bins=100, color='black')
+        ax.set_title(f'threshold = {cutoff}')
+        ax.set_xlabel('Number of Ca contacts')
+        ax.set_ylabel('Percentage, %')
+    
+    def hist_binding_affinity(self, ax):
+        df = self.data
+        sns.histplot(df, x='binding_affinity', stat='percent', ax=ax, bins=100, color='grey')
+        ax.set_ylim(0,12)
+        ax.set_xlabel('Binding affinity, kcal/mol')
+        ax.set_ylabel('Percentage, %')
+        q = np.quantile(df['binding_affinity'], .95)
+        ax.axvline(q, linestyle='--', color='black')
+        ax.text(-18, 11, f"95% = {q:.1f}", fontsize=8)
+
+    def hist_kd(self, ax):
+        df = self.data
+        sns.histplot(df, x='log-kd', stat='percent', ax=ax, bins=100, color='grey')
+        ax.set_ylim(0, 12)
+        ax.set_xlabel('Dissociation constant, -logM')
+        ax.set_ylabel('Percentage, %')
+        q = np.quantile(df['dissociation_constant'], .95)
+        ax.axvline(np.log(q), linestyle='--', color='black')
+        ax.text(-10, 11, f"95% = {q}", fontsize=8, ha='right')
 
     def precision_recall(self, ax, col):
         droc = self.data[col]
@@ -27,7 +53,6 @@ class PlotBinding:
         ax.set_xlim(-100, 0)
         ax.set_xlabel('Minus minimum distance of Ca, -$\AA$')
         ax.legend(loc='center left', fontsize=8)
-        return ax
 
     def roc(self, ax, col):
         droc = self.data[col]
@@ -37,4 +62,12 @@ class PlotBinding:
         ax.set_xlabel('False positive rate')
         ax.set_ylabel('True positive rate')
         ax.set_title(f"AUC = {roc_auc:.2f}", fontsize=8)
-        return ax
+
+    def box_contacts_distance(self, ax, col):
+        df = self.data[self.data[col]<=30].reset_index()
+        df[col] = df[col].round(0).astype(int)
+        sns.boxplot(df, x=col, y='binding_affinity', ax=ax, 
+            notch=True, fill=False, color='black')
+        ax.set_xlabel(f"Minimum distance of the top {col} ranked Ca, $\AA$")
+        ax.set_ylabel('Binding affinity, kcal/mol')
+        ax.axhline(-5.5, color='grey', linestyle='--')

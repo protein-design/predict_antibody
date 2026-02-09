@@ -101,7 +101,33 @@ class Layout:
                 fontweight='bold'
             )
         return fig, tuple(axes)
-        
+
+    def row2_row1(self, panel_xytext:list):
+        '''
+        1st row: one figure, 2nd row: two figures
+        '''
+        fig = plt.figure(figsize=self.figsize)
+        gs = gridspec.GridSpec(nrows=2, ncols=2,
+            height_ratios=self.args.get('height_ratios', [1, 1]),
+            width_ratios=self.args.get('width_ratios', [1, 1]),
+            wspace=self.args.get('wspace', 0.4),
+            hspace=self.args.get('hspace', 0.4),
+        )
+
+        # Create axes objects that span specific grid locations
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax3 = fig.add_subplot(gs[1, :])
+        axes = [ax1, ax2, ax3]
+
+        # add panel labels
+        for i in range(3):
+            ax = axes[i]
+            ax.annotate(self.panel_label[i], (0,1), xytext=panel_xytext[i],
+                xycoords='axes fraction', textcoords='offset points',
+                ha='left', va='top', fontsize=10, fontweight='bold')
+        return fig, tuple(axes)
+            
     def row1_row2(self, panel_xytext:list):
         '''
         1st row: one figure, 2nd row: two figures

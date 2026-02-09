@@ -93,23 +93,25 @@ class PlotPredict:
         ax.set_title(f"$R^2$={coef*coef:.4f}", fontsize=8)
         return ax
 
-
-
     def violin_pdb_rmsd(self, ax):
         self.df['rmsd_adj'] = self.df['rmsd'] + 1e-5
 
         sns.violinplot(self.df, x='chain_status', y='rmsd_adj', ax=ax,
-            log_scale=True, color='black', fill=False)
+            log_scale=True, inner='quart', color='black', fill=False)
         ax.set_xlim(-.6, 2.5)
         ax.set_xlabel('PDB Post-processing')
         ax.set_ylabel('Log RMSD')
+        
         x_offset= -.55
-        n=5
+        n=np.quantile(self.df['rmsd_adj'], .95)
         ax.axhline(np.log(n), linestyle='--', color='grey')
-        ax.text(x_offset, np.log(n)-1, n)
-        n=50
-        ax.axhline(np.log(n), linestyle='--', color='grey')
-        ax.text(x_offset, np.log(n)+1.2, 50)
+        ax.text(x_offset, np.log(n)+1, round(n, 1))
+        # n=5
+        # ax.axhline(np.log(n), linestyle='--', color='grey')
+        # ax.text(x_offset, np.log(n)-1, n)
+        # n=50
+        # ax.axhline(np.log(n), linestyle='--', color='grey')
+        # ax.text(x_offset, np.log(n)+1.2, 50)
         return ax
     
 

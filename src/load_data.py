@@ -225,3 +225,26 @@ class LoadData:
             res.append(rec)
         print('number of abag dimer:', len(res))
         return pd.DataFrame(res)
+
+    @staticmethod
+    def combo2_contacts(ab_combo2=None):
+        query = """
+            select * from combo2_contacts
+            where pdb_id in (
+                select pdb_id from view_antibody    
+            );
+        """
+        df = QueryComplex(True).list_data(query, True)
+        df['log-kd'] = df['dissociation_constant'].map(lambda x: np.log(x))
+        # keep antibody only
+        if ab_combo2 is not None:
+            df = df.merge(ab_combo2, how='inner', on='combo_id')
+        print(df.shape)
+        print(df.iloc[0].to_dict())
+        # not binding
+        df0 = df[df['binding_affinity'].isna()]
+        print('no binding:', len(df0))
+        # bidning
+        df1 = df[df['binding_affinity'].notna()]
+        print('binding:', len(df1))
+        return df0, df1
