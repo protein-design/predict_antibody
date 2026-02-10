@@ -27,7 +27,7 @@ class PlotBinding:
         ax.set_ylabel('Percentage, %')
         q = np.quantile(df['binding_affinity'], .95)
         ax.axvline(q, linestyle='--', color='black')
-        ax.text(-18, 11, f"95% = {q:.1f}", fontsize=8)
+        ax.text(-19.8, 10.6, f"95% = {q:.1f}", fontsize=8)
 
     def hist_kd(self, ax):
         df = self.data
@@ -37,7 +37,7 @@ class PlotBinding:
         ax.set_ylabel('Percentage, %')
         q = np.quantile(df['dissociation_constant'], .95)
         ax.axvline(np.log(q), linestyle='--', color='black')
-        ax.text(-10, 11, f"95% = {q}", fontsize=8, ha='right')
+        ax.text(-10, 10.6, f"95% = {q}", fontsize=8, ha='right')
 
     def precision_recall(self, ax, col):
         droc = self.data[col]
