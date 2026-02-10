@@ -13,7 +13,8 @@ class PlotVenn:
         venny4py(sets=sets, size=3, colors=colors, edge_color='black',
             column_spacing=2, line_width=.5, dpi=300, asax=ax)
         # set labels
-        ax.legend()
+        legend = ax.legend()
+        legend.set_visible(False)
         for i in range(len(sets)):
             x, y = labels_xy[i]
             label = list(sets)[i]
