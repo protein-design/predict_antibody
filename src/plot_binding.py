@@ -33,7 +33,7 @@ class PlotBinding:
         df = self.data
         sns.histplot(df, x='log-kd', stat='percent', ax=ax, bins=100, color='grey')
         ax.set_ylim(0, 12)
-        ax.set_xlabel('Dissociation constant, -logM')
+        ax.set_xlabel('Dissociation constant, logM')
         ax.set_ylabel('Percentage, %')
         q = np.quantile(df['dissociation_constant'], .95)
         ax.axvline(np.log(q), linestyle='--', color='black')
